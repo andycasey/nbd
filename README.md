@@ -1,5 +1,9 @@
 # Jupyter Notebook Grading System (NBD)
 
+[![Deploy Apps Script](https://github.com/andycasey/nbd/actions/workflows/deploy-apps-script.yml/badge.svg)](https://github.com/andycasey/nbd/actions/workflows/deploy-apps-script.yml)
+[![Deploy Cloud Function](https://github.com/andycasey/nbd/actions/workflows/deploy-cloud-function.yml/badge.svg)](https://github.com/andycasey/nbd/actions/workflows/deploy-cloud-function.yml)
+[![Test](https://github.com/andycasey/nbd/actions/workflows/test.yml/badge.svg)](https://github.com/andycasey/nbd/actions/workflows/test.yml)
+
 Browser-based Jupyter notebook grading system for university courses using Google Apps Script, Cloud Functions, and nbgrader.
 
 ## Project Goal
@@ -38,7 +42,34 @@ nbd/
 
 ## Quick Start
 
-See [docs/teacher-quickstart.md](docs/teacher-quickstart.md) for complete setup instructions.
+### Option 1: Automated Setup (Recommended)
+
+```bash
+# Clone repository
+git clone https://github.com/andycasey/nbd.git
+cd nbd
+
+# Copy and configure environment
+cp .env.template .env
+# Edit .env with your configuration
+
+# Run automated setup
+npm run setup
+```
+
+### Option 2: Manual Setup
+
+See [docs/teacher-quickstart.md](docs/teacher-quickstart.md) for complete step-by-step instructions.
+
+### Option 3: GitHub Actions CI/CD
+
+After initial setup, all deployments happen automatically:
+
+1. Configure GitHub secrets (see [.github/SECRETS.md](.github/SECRETS.md))
+2. Push changes to `main` branch
+3. GitHub Actions deploys automatically
+
+See [.github/README.md](.github/README.md) for CI/CD documentation.
 
 ### For Teachers
 

@@ -1,0 +1,76 @@
+name: Deploy Apps Script
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps-script/**'
+      - '.github/workflows/deploy-apps-script.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install clasp
+        run: npm install -g @google/clasp
+
+      - name: Configure clasp credentials
+        run: |
+          echo "$CLASP_CREDENTIALS" > ~/.clasprc.json
+        env:
+          CLASP_CREDENTIALS: ${{ secrets.CLASP_CREDENTIALS }}
+
+      - name: Update configuration
+        working-directory: apps-script
+        run: |
+          # Update environment-specific values
+          sed -i "s/const TEACHER_EMAIL = \".*\";/const TEACHER_EMAIL = \"$TEACHER_EMAIL\";/" Code.gs
+          sed -i "s/const ASSIGNMENTS_SHEET_ID = \".*\";/const ASSIGNMENTS_SHEET_ID = \"$SHEET_ID\";/" Code.gs
+
+          # Update Cloud Function URL if available
+          if [ -n "$CLOUD_FUNCTION_URL" ]; then
+            sed -i "s|const CLOUD_FUNCTION_URL = \".*\";|const CLOUD_FUNCTION_URL = \"$CLOUD_FUNCTION_URL\";|" Code.gs
+          fi
+        env:
+          TEACHER_EMAIL: ${{ secrets.TEACHER_EMAIL }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+          CLOUD_FUNCTION_URL: ${{ secrets.CLOUD_FUNCTION_URL }}
+
+      - name: Create .clasp.json
+        working-directory: apps-script
+        run: |
+          echo "{\"scriptId\":\"$SCRIPT_ID\",\"rootDir\":\"./\"}" > .clasp.json
+        env:
+          SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
+
+      - name: Push to Apps Script
+        working-directory: apps-script
+        run: |
+          clasp push --force
+
+      - name: Deploy new version
+        working-directory: apps-script
+        run: |
+          VERSION=$(clasp version "Deployed from GitHub Actions - $(date +%Y-%m-%d-%H:%M)")
+          echo "Deployed version: $VERSION"
+
+          # Deploy the new version
+          clasp deploy --versionNumber $VERSION --description "Auto-deployed from GitHub" || \
+            clasp deploy --description "Auto-deployed from GitHub"
+
+      - name: Deployment summary
+        run: |
+          echo "✅ Apps Script deployed successfully"
+          echo "Script ID: ${{ secrets.APPS_SCRIPT_ID }}"
+          echo "Edit: https://script.google.com/d/${{ secrets.APPS_SCRIPT_ID }}/edit"
