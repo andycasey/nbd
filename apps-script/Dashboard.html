@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>NBD Teacher Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 40px;
+      font-size: 16px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+      padding: 30px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="datetime-local"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="datetime-local"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.1s;
+    }
+
+    button:hover {
+      background: #5568d3;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .button-secondary {
+      background: #64b5f6;
+    }
+
+    .button-secondary:hover {
+      background: #42a5f5;
+    }
+
+    .button-danger {
+      background: #ef5350;
+    }
+
+    .button-danger:hover {
+      background: #e53935;
+    }
+
+    .invite-link-display {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #e8f5e9;
+      border-radius: 6px;
+      border: 2px solid #4caf50;
+    }
+
+    .invite-link-display.show {
+      display: block;
+    }
+
+    .link-url {
+      background: white;
+      padding: 12px;
+      border-radius: 4px;
+      margin: 10px 0;
+      word-break: break-all;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    .copy-button {
+      margin-top: 10px;
+    }
+
+    .assignments-list {
+      margin-top: 20px;
+    }
+
+    .assignment-card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border-left: 4px solid #667eea;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .assignment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .assignment-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .assignment-deadline {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .submissions-count {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .submissions-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .submissions-table th,
+    .submissions-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .submissions-table th {
+      background: #f5f5f5;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .submissions-table tr:hover {
+      background: #f9f9f9;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-submitted {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .status-graded {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .alert.show {
+      display: block;
+    }
+
+    .alert-success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #4caf50;
+    }
+
+    .alert-error {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef5350;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📚 NBD Teacher Dashboard</h1>
+    <p class="subtitle">Jupyter Notebook Grading System</p>
+
+    <div id="alert" class="alert"></div>
+
+    <!-- Create Assignment Section -->
+    <div class="section">
+      <h2>Create New Assignment</h2>
+      <form id="createAssignmentForm">
+        <div class="form-group">
+          <label for="assignmentName">Assignment Name</label>
+          <input type="text" id="assignmentName" placeholder="e.g., Week 1 - Introduction to Python" required>
+        </div>
+
+        <div class="form-group">
+          <label for="notebookFileId">Notebook Google Drive File ID</label>
+          <input type="text" id="notebookFileId" placeholder="Get ID from Drive URL: drive.google.com/file/d/FILE_ID/view" required>
+          <small style="color: #666; display: block; margin-top: 5px;">
+            💡 Tip: Right-click notebook in Drive → Get link → Copy ID from URL
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="deadline">Deadline (Optional)</label>
+          <input type="datetime-local" id="deadline">
+        </div>
+
+        <button type="submit">Create Assignment & Generate Link</button>
+      </form>
+
+      <div id="inviteLinkDisplay" class="invite-link-display">
+        <h3 style="color: #4caf50; margin-bottom: 10px;">✅ Assignment Created!</h3>
+        <p>Share this invite link with your students:</p>
+        <div id="linkUrl" class="link-url"></div>
+        <button class="copy-button" onclick="copyInviteLink()">📋 Copy Link</button>
+      </div>
+    </div>
+
+    <!-- View Assignments Section -->
+    <div class="section">
+      <h2>Your Assignments</h2>
+      <button class="button-secondary" onclick="loadAssignments()">🔄 Refresh</button>
+
+      <div id="loadingAssignments" class="loading">
+        <div class="spinner"></div>
+        <p>Loading assignments...</p>
+      </div>
+
+      <div id="assignmentsList" class="assignments-list">
+        <p style="color: #666;">Click "Refresh" to load assignments</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentInviteUrl = '';
+
+    // Form submission
+    document.getElementById('createAssignmentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('assignmentName').value;
+      const notebookFileId = document.getElementById('notebookFileId').value;
+      const deadline = document.getElementById('deadline').value;
+
+      showAlert('Creating assignment...', 'info');
+
+      try {
+        // Call Apps Script backend
+        const response = await fetch(window.location.href, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'createAssignment',
+            name: name,
+            notebookFileId: notebookFileId,
+            deadline: deadline
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.error) {
+          showAlert('Error: ' + result.error, 'error');
+        } else {
+          currentInviteUrl = result.inviteUrl;
+          document.getElementById('linkUrl').textContent = result.inviteUrl;
+          document.getElementById('inviteLinkDisplay').classList.add('show');
+          showAlert('Assignment created successfully!', 'success');
+
+          // Reset form
+          document.getElementById('createAssignmentForm').reset();
+        }
+      } catch (error) {
+        showAlert('Error creating assignment: ' + error.message, 'error');
+      }
+    });
+
+    // Copy invite link to clipboard
+    function copyInviteLink() {
+      navigator.clipboard.writeText(currentInviteUrl).then(() => {
+        showAlert('Link copied to clipboard!', 'success');
+      }).catch((error) => {
+        showAlert('Failed to copy link: ' + error.message, 'error');
+      });
+    }
+
+    // Load assignments list
+    async function loadAssignments() {
+      const loading = document.getElementById('loadingAssignments');
+      const list = document.getElementById('assignmentsList');
+
+      loading.classList.add('show');
+      list.innerHTML = '';
+
+      try {
+        // TODO: Implement getAssignments API call
+        // For now, show placeholder
+        setTimeout(() => {
+          loading.classList.remove('show');
+          list.innerHTML = '<p style="color: #666;">No assignments yet. Create one above!</p>';
+        }, 1000);
+      } catch (error) {
+        loading.classList.remove('show');
+        showAlert('Error loading assignments: ' + error.message, 'error');
+      }
+    }
+
+    // Show alert message
+    function showAlert(message, type) {
+      const alert = document.getElementById('alert');
+      alert.textContent = message;
+      alert.className = 'alert show alert-' + type;
+
+      setTimeout(() => {
+        alert.classList.remove('show');
+      }, 5000);
+    }
+
+    // Grade all submissions for an assignment
+    async function gradeAll(assignmentId) {
+      if (!confirm('This will grade all submissions. Continue?')) {
+        return;
+      }
+
+      showAlert('Starting grading process... You will receive an email when complete.', 'info');
+
+      try {
+        const response = await fetch(window.location.href, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'gradeAll',
+            assignmentId: assignmentId
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.error) {
+          showAlert('Error: ' + result.error, 'error');
+        } else {
+          showAlert(result.message, 'success');
+        }
+      } catch (error) {
+        showAlert('Error starting grading: ' + error.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>
