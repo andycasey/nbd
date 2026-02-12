@@ -11,7 +11,7 @@
 
 // ===== CONFIGURATION =====
 const TEACHER_EMAIL = "andrew.casey@monash.edu";
-const ASSIGNMENTS_SHEET_ID = "YOUR_SHEET_ID_HERE"; // Replace with your Google Sheet ID
+const ASSIGNMENTS_SHEET_ID = "1KKHC1vuncyEh9C6ZBfukWGgFS5fMG8yRcWKaZ30S69Y"; // Replace with your Google Sheet ID
 
 // Sheet names
 const ASSIGNMENTS_SHEET = "Assignments";
@@ -255,7 +255,7 @@ function getSubmissions(assignmentId) {
  * @return {Object} Status message
  */
 function gradeAllSubmissions(assignmentId) {
-  const CLOUD_FUNCTION_URL = "YOUR_CLOUD_FUNCTION_URL_HERE"; // Update after deployment
+  const CLOUD_FUNCTION_URL = "https://us-central1-nbd-grading-37239.cloudfunctions.net/grade-notebooks"; // Update after deployment
 
   const assignment = getAssignment(assignmentId);
   const sheet = openSheet(SUBMISSIONS_SHEET);
