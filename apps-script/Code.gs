@@ -20,15 +20,20 @@ const SUBMISSIONS_SHEET = "Submissions";
 // ===== MAIN ENTRY POINTS =====
 
 /**
- * Handle incoming HTTP GET requests (invite links)
+ * Handle incoming HTTP GET requests
+ * - No parameters: Serve teacher dashboard
+ * - With assignment parameter: Handle student invite link
  * URL format: https://script.google.com/.../exec?assignment=ASSIGNMENT_ID
  */
 function doGet(e) {
   try {
     const assignmentId = e.parameter.assignment;
 
+    // If no assignment parameter, serve the teacher dashboard
     if (!assignmentId) {
-      return createErrorPage("Missing assignment parameter in URL.");
+      return HtmlService.createHtmlOutputFromFile('Dashboard')
+        .setTitle('NBD Teacher Dashboard')
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     }
 
     const assignment = getAssignment(assignmentId);
